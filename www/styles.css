@@ -1,0 +1,193 @@
+/* Bayesian P-value Interpreter Styles */
+
+/* ===== General ===== */
+body {
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+/* ===== Title ===== */
+.title-panel {
+    background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+    color: white;
+    padding: 20px 30px;
+    margin: -20px -15px 20px -15px;
+    border-radius: 0;
+}
+
+.title-panel h2 {
+    margin: 0;
+    font-weight: 300;
+    font-size: 28px;
+}
+
+.title-panel p {
+    margin: 5px 0 0 0;
+    opacity: 0.9;
+    font-size: 14px;
+}
+
+/* ===== Sidebar ===== */
+.sidebar-panel {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+}
+
+.sidebar-panel h4 {
+    color: #1976D2;
+    border-bottom: 2px solid #e3f2fd;
+    padding-bottom: 8px;
+    margin-top: 0;
+}
+
+.sidebar-panel .form-group {
+    margin-bottom: 15px;
+}
+
+/* Prior buttons */
+.prior-buttons .btn {
+    margin: 2px;
+    border-radius: 20px;
+    font-size: 12px;
+    padding: 5px 12px;
+}
+
+.prior-buttons .btn:hover {
+    background-color: #1976D2;
+    color: white;
+}
+
+/* ===== Main Panel ===== */
+.main-panel {
+    padding-left: 30px;
+}
+
+/* ===== Result Cards ===== */
+.result-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.result-card h4 {
+    margin-top: 0;
+    color: #666;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.result-card .big-number {
+    font-size: 48px;
+    font-weight: 300;
+    line-height: 1.2;
+}
+
+.result-card .subtitle {
+    color: #666;
+    font-size: 14px;
+}
+
+/* Color variants */
+.result-card.positive .big-number {
+    color: #2E7D32;
+}
+
+.result-card.negative .big-number {
+    color: #C62828;
+}
+
+.result-card.neutral .big-number {
+    color: #1976D2;
+}
+
+/* ===== Interpretation Box ===== */
+.interpretation-box {
+    background: #fff3e0;
+    border-left: 4px solid #ff9800;
+    border-radius: 4px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+}
+
+.interpretation-box h4 {
+    margin-top: 0;
+    color: #e65100;
+}
+
+/* ===== Method Badge ===== */
+.method-badge {
+    display: inline-block;
+    background: #e3f2fd;
+    color: #1565C0;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin-top: 10px;
+}
+
+/* ===== Section Headers ===== */
+.section-header {
+    color: #333;
+    font-weight: 500;
+    margin: 30px 0 15px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+/* ===== Sensitivity Table ===== */
+.table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.table th {
+    background: #f5f5f5;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+
+.table td, .table th {
+    padding: 12px 15px;
+    text-align: center;
+}
+
+/* ===== Icon Array ===== */
+.icon-array-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* ===== Nomogram ===== */
+.nomogram-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* ===== Footer ===== */
+.footer {
+    text-align: center;
+    color: #999;
+    font-size: 12px;
+    padding: 20px;
+    margin-top: 30px;
+}
+
+.footer a {
+    color: #1976D2;
+}

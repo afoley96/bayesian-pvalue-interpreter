@@ -2,6 +2,7 @@
 # Shiny Application
 
 library(shiny)
+library(ggplot2)
 
 # Load core functions
 source("R/sellke_berger.R")
@@ -15,50 +16,62 @@ source("R/visualizations.R")
 
 ui <- fluidPage(
   
+  # Include CSS
+  tags$head(
+    tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")
+  ),
+  
   # Title
-  titlePanel("Bayesian P-value Interpreter"),
+  div(class = "title-panel",
+      h2("Bayesian P-value Interpreter"),
+      p("Transform p-values into probabilities you can actually interpret")
+  ),
   
   # Sidebar layout
   sidebarLayout(
     
     # --- Input Panel ---
     sidebarPanel(
+      class = "sidebar-panel",
       
-      h4("Required"),
+      h4("Step 1: Enter P-value"),
       
       numericInput(
         inputId = "p_value",
-        label = "Observed p-value:",
+        label = NULL,
         value = 0.05,
         min = 0.0001,
         max = 0.999,
-        step = 0.01
+        step = 0.001
       ),
+      
+      h4("Step 2: Set Prior Probability"),
+      p(style = "font-size: 13px; color: #666;",
+        "How plausible was this effect before the study?"),
       
       sliderInput(
         inputId = "prior",
-        label = "Prior probability (effect is real):",
+        label = NULL,
         min = 0.01,
         max = 0.99,
         value = 0.5,
         step = 0.01
       ),
       
-      # Quick-select buttons for prior
-      fluidRow(
-        column(12,
-               actionButton("prior_10", "10%", class = "btn-sm"),
-               actionButton("prior_30", "30%", class = "btn-sm"),
-               actionButton("prior_50", "50%", class = "btn-sm"),
-               actionButton("prior_70", "70%", class = "btn-sm"),
-               actionButton("prior_90", "90%", class = "btn-sm")
-        )
+      # Quick-select buttons
+      div(class = "prior-buttons",
+          actionButton("prior_10", "10%", class = "btn-sm btn-default"),
+          actionButton("prior_30", "30%", class = "btn-sm btn-default"),
+          actionButton("prior_50", "50%", class = "btn-sm btn-default"),
+          actionButton("prior_70", "70%", class = "btn-sm btn-default"),
+          actionButton("prior_90", "90%", class = "btn-sm btn-default")
       ),
       
       hr(),
       
-      # Optional: Colquhoun method
-      h4("Optional (for Colquhoun method)"),
+      h4("Optional: Study Details"),
+      p(style = "font-size: 12px; color: #666;",
+        "For more precise calculation (Colquhoun method)"),
       
       numericInput(
         inputId = "n_per_group",
@@ -75,59 +88,75 @@ ui <- fluidPage(
         min = 0.01,
         max = 3,
         step = 0.1
-      ),
-      
-      hr(),
-      
-      # Info
-      p(
-        style = "font-size: 12px; color: gray;",
-        "Sellke-Berger method requires only p-value.",
-        br(),
-        "Colquhoun method also requires sample size and effect size."
       )
       
     ),
     
-    # --- Output Panel ---
+    # --- Main Panel ---
     mainPanel(
+      class = "main-panel",
       
-      h3("Results"),
-      
-      # Main result box
-      wellPanel(
-        h4("Posterior Probability"),
-        textOutput("posterior_text"),
-        br(),
-        h4("False Positive Risk"),
-        textOutput("fpr_text")
+      # Results row
+      fluidRow(
+        column(6,
+               div(class = "result-card positive",
+                   h4("Posterior Probability"),
+                   div(class = "big-number", textOutput("posterior_text", inline = TRUE)),
+                   div(class = "subtitle", "chance effect is real")
+               )
+        ),
+        column(6,
+               div(class = "result-card negative",
+                   h4("False Positive Risk"),
+                   div(class = "big-number", textOutput("fpr_text", inline = TRUE)),
+                   div(class = "subtitle", "chance this is a false positive")
+               )
+        )
       ),
       
       # Bayes factor
-      wellPanel(
-        h4("Bayes Factor"),
-        textOutput("bf_text"),
-        textOutput("method_text")
+      fluidRow(
+        column(12,
+               div(class = "result-card neutral",
+                   h4("Evidence Strength"),
+                   div(style = "font-size: 24px;",
+                       textOutput("bf_text", inline = TRUE)
+                   ),
+                   div(class = "method-badge",
+                       textOutput("method_text", inline = TRUE)
+                   )
+               )
+        )
       ),
       
       # Interpretation
-      wellPanel(
-        h4("Interpretation"),
-        textOutput("interpretation_text")
+      div(class = "interpretation-box",
+          h4("What does this mean?"),
+          textOutput("interpretation_text")
+      ),
+      
+      # Nomogram
+      h4(class = "section-header", "Nomogram: Prior → Evidence → Posterior"),
+      div(class = "nomogram-container",
+          plotOutput("nomogram", height = "350px")
+      ),
+      
+      # Icon array
+      h4(class = "section-header", "If 100 studies reported this p-value..."),
+      div(class = "icon-array-container",
+          htmlOutput("icon_array")
       ),
       
       # Sensitivity table
-      h4("Sensitivity: What if your prior was different?"),
-      tableOutput("sensitivity_table")
-      ,
+      h4(class = "section-header", "Sensitivity Analysis"),
+      p(style = "color: #666;", "How would different prior beliefs change the conclusion?"),
+      tableOutput("sensitivity_table"),
       
-      # Nomogram
-      h4("Nomogram: Prior → Evidence → Posterior"),
-      plotOutput("nomogram", height = "400px"),
-      
-      # Icon array
-      h4("Visual: If 100 studies reported this p-value..."),
-      htmlOutput("icon_array")
+      # Footer
+      div(class = "footer",
+          p("Based on methods from Sellke, Bayarri & Berger (2001) and Colquhoun (2017)"),
+          p("Inspired by Newman & Kohn's diagnostic test framework")
+      )
       
     )
   )
@@ -160,13 +189,11 @@ server <- function(input, output, session) {
     use_colquhoun <- !is.na(n) && !is.na(d) && n >= 2 && d > 0
     
     if (use_colquhoun) {
-      # Colquhoun method
       res <- interpret_pvalue_colquhoun(p, n, d, prior)
-      method <- "Colquhoun (exact likelihood ratio)"
+      method <- "Colquhoun method"
     } else {
-      # Sellke-Berger method
       res <- interpret_pvalue(p, prior)
-      method <- "Sellke-Berger (minimum Bayes factor)"
+      method <- "Sellke-Berger method"
     }
     
     res$method_name <- method
@@ -188,55 +215,49 @@ server <- function(input, output, session) {
   
   output$bf_text <- renderText({
     res <- results()
-    paste0(round(res$bayes_factor, 2), " : 1 in favor of effect")
+    bf <- res$bayes_factor
+    if (bf >= 1) {
+      paste0("Bayes Factor: ", round(bf, 2), " : 1 for effect")
+    } else {
+      paste0("Bayes Factor: 1 : ", round(1/bf, 2), " against effect")
+    }
   })
   
   output$method_text <- renderText({
     res <- results()
-    paste0("Method: ", res$method_name)
+    res$method_name
   })
   
   output$interpretation_text <- renderText({
     res <- results()
-    p <- res$p_value
     post <- res$posterior
     fpr <- res$fpr
+    p <- res$p_value
+    prior_pct <- round(res$prior * 100)
     
-    if (post >= 0.9) {
+    if (post >= 0.95) {
+      strength <- "very strong"
+      action <- "The evidence strongly supports a real effect."
+    } else if (post >= 0.85) {
       strength <- "strong"
-    } else if (post >= 0.75) {
+      action <- "The evidence supports a real effect, though some uncertainty remains."
+    } else if (post >= 0.70) {
       strength <- "moderate"
-    } else if (post >= 0.5) {
+      action <- "The evidence is suggestive but not conclusive. Consider replication."
+    } else if (post >= 0.50) {
       strength <- "weak"
+      action <- "The evidence is weak. Interpret with caution."
     } else {
       strength <- "very weak"
+      action <- "The evidence does not support a real effect given your prior."
     }
     
     paste0(
-      "A p-value of ", p, " with your prior of ", round(res$prior * 100), "% ",
-      "gives ", strength, " evidence for a real effect. ",
-      "There is approximately a ", round(fpr * 100), "% chance ",
-      "this is a false positive."
+      "With a prior of ", prior_pct, "% and p = ", p, ", the evidence is ",
+      strength, ". ", action, " ",
+      "False positive risk: ", round(fpr * 100), "%."
     )
   })
-  
-  # --- Sensitivity table ---
-  output$sensitivity_table <- renderTable({
-    
-    req(input$p_value)
-    
-    p <- input$p_value
-    priors <- c(0.1, 0.3, 0.5, 0.7, 0.9)
-    
-    bf <- sellke_berger_bf(p)
-    
-    data.frame(
-      Prior = paste0(priors * 100, "%"),
-      Posterior = paste0(round(prior_to_posterior(priors, bf) * 100, 1), "%"),
-      FPR = paste0(round((1 - prior_to_posterior(priors, bf)) * 100, 1), "%")
-    )
-    
-  }, align = "c")
   
   # --- Nomogram ---
   output$nomogram <- renderPlot({
@@ -249,6 +270,25 @@ server <- function(input, output, session) {
     res <- results()
     HTML(generate_icon_array(res$posterior))
   })
+  
+  # --- Sensitivity table ---
+  output$sensitivity_table <- renderTable({
+    
+    req(input$p_value)
+    
+    p <- input$p_value
+    priors <- c(0.1, 0.3, 0.5, 0.7, 0.9)
+    bf <- sellke_berger_bf(p)
+    posteriors <- prior_to_posterior(priors, bf)
+    
+    data.frame(
+      `Prior Belief` = paste0(priors * 100, "%"),
+      `Posterior Probability` = paste0(round(posteriors * 100, 1), "%"),
+      `False Positive Risk` = paste0(round((1 - posteriors) * 100, 1), "%"),
+      check.names = FALSE
+    )
+    
+  }, align = "c", striped = TRUE, hover = TRUE, bordered = TRUE)
   
 }
 
