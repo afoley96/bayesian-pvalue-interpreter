@@ -152,10 +152,70 @@ ui <- fluidPage(
       p(style = "color: #666;", "How would different prior beliefs change the conclusion?"),
       tableOutput("sensitivity_table"),
       
+      # About section
+      h4(class = "section-header", "About This Tool"),
+      div(class = "result-card",
+          h4("Methods"),
+          p("This tool computes the posterior probability that an effect is real, 
+                   given an observed p-value and your prior belief. It transforms the 
+                   commonly misinterpreted p-value into a more intuitive probability."),
+          
+          p(strong("Sellke-Berger method:"), " Computes the minimum Bayes factor 
+                   (maximum evidence) from a p-value alone, using the bound derived by 
+                   Sellke, Bayarri & Berger (2001). This is conservative—actual evidence 
+                   may be weaker."),
+          
+          p(strong("Colquhoun method:"), " When sample size and effect size are 
+                   provided, computes the exact likelihood ratio using the approach 
+                   described by Colquhoun (2017). This accounts for study-specific power."),
+          
+          h4("Key References"),
+          tags$ul(
+            tags$li("Sellke, T., Bayarri, M. J., & Berger, J. O. (2001). Calibration of p-values 
+                            for testing precise null hypotheses. The American Statistician, 55(1), 62-71."),
+            tags$li("Colquhoun, D. (2017). The reproducibility of research and the misinterpretation 
+                            of p-values. Royal Society Open Science, 4(12), 171085."),
+            tags$li("Colquhoun, D. (2019). The False Positive Risk: A proposal concerning what to 
+                            do about p-values. The American Statistician, 73(sup1), 192-201."),
+            tags$li("Held, L., & Ott, M. (2018). On p-values and Bayes factors. 
+                            Annual Review of Statistics and Its Application, 5, 393-419.")
+          ),
+          
+          p(style = "font-size: 13px; color: #666; margin-top: 15px;",
+            "This tool applies the diagnostic test framework for interpreting p-values, 
+                   as described in Newman & Kohn's 'Evidence-Based Diagnosis'.")
+      ),
+      
+      # Feedback section
+      h4(class = "section-header", "Feedback & Suggestions"),
+      div(class = "result-card",
+          p("We welcome your input on improving this tool."),
+          
+          h4("Questions to Consider:"),
+          tags$ul(
+            tags$li("Is the nomogram visualization intuitive?"),
+            tags$li("Are the default prior options appropriate?"),
+            tags$li("What additional features would be valuable?"),
+            tags$li("How could we better explain the methodology?")
+          ),
+          
+          h4("Notes / Comments:"),
+          div(style = "background: #f5f5f5; border: 1px dashed #ccc; border-radius: 4px; 
+                            padding: 20px; min-height: 100px; color: #999;",
+              p("[Space for reviewer comments]")
+          ),
+          
+          h4("Suggested Improvements:"),
+          div(style = "background: #f5f5f5; border: 1px dashed #ccc; border-radius: 4px; 
+                            padding: 20px; min-height: 100px; color: #999;",
+              p("[Space for suggestions]")
+          )
+      ),
+      
       # Footer
       div(class = "footer",
-          p("Based on methods from Sellke, Bayarri & Berger (2001) and Colquhoun (2017)"),
-          p("Inspired by Newman & Kohn's diagnostic test framework")
+          p("Version 0.1 | April 2026"),
+          p("Developed for educational and research purposes")
       )
       
     )
