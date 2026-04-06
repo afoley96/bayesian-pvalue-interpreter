@@ -7,6 +7,7 @@ library(shiny)
 source("R/sellke_berger.R")
 source("R/posterior.R")
 source("R/colquhoun.R")
+source("R/visualizations.R")
 
 # ============================================================================
 # UI
@@ -118,6 +119,15 @@ ui <- fluidPage(
       # Sensitivity table
       h4("Sensitivity: What if your prior was different?"),
       tableOutput("sensitivity_table")
+      ,
+      
+      # Nomogram
+      h4("Nomogram: Prior → Evidence → Posterior"),
+      plotOutput("nomogram", height = "400px"),
+      
+      # Icon array
+      h4("Visual: If 100 studies reported this p-value..."),
+      htmlOutput("icon_array")
       
     )
   )
@@ -227,6 +237,18 @@ server <- function(input, output, session) {
     )
     
   }, align = "c")
+  
+  # --- Nomogram ---
+  output$nomogram <- renderPlot({
+    res <- results()
+    generate_nomogram(res$prior, res$bayes_factor, res$posterior)
+  })
+  
+  # --- Icon array ---
+  output$icon_array <- renderUI({
+    res <- results()
+    HTML(generate_icon_array(res$posterior))
+  })
   
 }
 
